@@ -1,0 +1,13 @@
+﻿.mis311-html-marquee {
+    height: 50px;
+    width: 1185px;
+    background-color: #FFFFCC;
+    background-image: url('http://');
+    font-family: Arial;
+    font-size: x-large;
+    color: #009900;
+    border-width: 0;
+    border-style: solid;
+    font-weight: 700;
+    font-style: italic;
+}

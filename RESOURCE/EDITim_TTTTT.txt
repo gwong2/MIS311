@@ -1,0 +1,501 @@
+<%@ Page Title="" Language="VB" MasterPageFile="~/MasterPage.master" validateRequest="false" %>
+
+<%@ Import Namespace="System" %>
+<%@ Import Namespace="System.Web" %>
+<%@ Import Namespace="System.Web.UI" %>
+<%@ Import Namespace="System.Web.UI.WebControls" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Data.OleDb" %>
+<%@ Import Namespace="System.Data.SqlClient" %>
+<%@ Import Namespace="System.Configuration" %>
+
+
+<script language="VB" runat="server">
+'
+' Instructions for programmer: 
+' This program produces a datagrid that displays data from one MSAccess database table or query.  
+' This datagrid allows updating, deleting and inserting of rows, as well as sorting of grid-contents by column 
+'
+' This template can be installed in a web-server folder that serves IIS asp.net applications
+' and allows OLEDB connection to MSAccess databases imbedded in web-folders with update-prevention disabled.
+'
+' Before running this program, 
+' 1) Copy and rename this file as EDITim_TTTTT.txt, where TTTTT is the name of your database table
+' 2) Using Notepad, do a global search-and-replace of ALL OCCURRENCES (try ctl-h) in this template as follows:
+'    -Replace TTTTT with the database table name
+'    -Replace PKPKPKPKPK with the name of the database table's primary key column
+'    -Replace DDDDD with the name of your database (eg. xgen): do not include .accdb in the name
+'    -Replace FFFF1 with the name of the first non-primary-key column in the database table 
+'    -Replace FFFF2 with the name of the second non-primary-key column, if applicable  
+'    -continue replacing FFFF3 through FFFFA for the third through tenth non-primary-key columns, if applicable
+' 3) Remove entirely all remaining lines/sections of code that contain FFFF, as these will not run and are unnecessary 
+'
+' 4) Install foreign-key-lookup links to web-pages that show the parent-table:
+'    Choose one foreign key column from this page's database table
+'    Modify the code below by changing PTABPTAB to the name of the foreign key column's parent-table
+'    Copy the code (including the blank in col2 and including the final >, but excluding carriage-return)
+'    and paste it immediately before both the </HeaderTemplate> and the </FooterTemplate> tags 
+'    in the "template column" code for the foreign key column (near the bottom of this program)... 
+' <a href="LISTim_PTABPTAB.aspx">^</a>
+'
+' 5) To widen text-boxes on the datagrid's footer and rows-being-updated:
+'    look for the text Columns="5" in the template column of your choice (it occurs twice)
+'    change the 5 to something larger (in both occurrences) 
+' 
+' 6) Import this into your FrontPage folder, rename the file suffix from .txt to .aspx and execute.  
+' 
+' ================================================================================
+  Sub Page_Load(src As Object, e As EventArgs)   
+    If Not IsPostBack Then
+      Session("SortColumn") = "PKPKPKPKPK"
+      BindSortedData(Session("SortColumn"))
+    End If
+  End Sub
+
+' ================================================================================
+  Sub BindSortedData(sortExpr as String)
+        Dim conn as OleDBConnection
+        conn = new OleDBConnection("Provider=Microsoft.ACE.OLEDB.12.0;"+ _
+        "Data Source=" + Server.MapPath("~") + "/App_Data/DDDDD.accdb")
+       Dim sortSQL as String = "SELECT * FROM TTTTT ORDER BY " & sortExpr 
+       Dim SortCommand as New OleDbCommand(sortSQL, conn)
+       conn.Open()
+       _gd1.DataSource = SortCommand.ExecuteReader(CommandBehavior.CloseConnection)
+       _gd1.DataBind()	
+  End Sub
+
+' ================================================================================
+  Sub gd1_Sort(sender as Object, e as DataGridSortCommandEventArgs)
+     Session("SortColumn") = e.SortExpression
+     BindSortedData(Session("SortColumn"))
+  End Sub 
+
+' ================================================================================
+  Sub gd1_Edit(sender As Object, e As DataGridCommandEventArgs)  
+    _gd1.ShowFooter = False
+    _gd1.EditItemIndex = e.Item.ItemIndex
+     BindSortedData(Session("SortColumn"))
+  End Sub
+
+' ================================================================================
+  Sub gd1_Cancel(sender As Object, e As DataGridCommandEventArgs)  
+    _gd1.ShowFooter = True
+    _gd1.EditItemIndex = -1
+     BindSortedData(Session("SortColumn"))
+  End Sub
+
+' ================================================================================
+  Sub gd1_Update(sender As Object, e As DataGridCommandEventArgs)
+    _gd1.ShowFooter = True
+    Dim updateCmd As String
+      updateCmd = "Update TTTTT SET " _
+            & "FFFF1 = @FFFF1" _
+            & ", FFFF2 = @FFFF2" _
+            & ", FFFF3 = @FFFF3" _
+            & ", FFFF4 = @FFFF4" _
+            & ", FFFF5 = @FFFF5" _
+            & ", FFFF6 = @FFFF6" _
+            & ", FFFF7 = @FFFF7" _
+            & ", FFFF8 = @FFFF8" _
+            & ", FFFF9 = @FFFF9" _
+            & ", FFFFA = @FFFFA" _
+            & " where format(PKPKPKPKPK) = "  & """" & CType(e.Item.Cells(2).Controls(0), TextBox).Text  & """"
+
+     Dim conn as OleDBConnection
+        conn = new OleDBConnection("Provider=Microsoft.ACE.OLEDB.12.0;"+ _
+        "Data Source=" + Server.MapPath("~") + "/App_Data/DDDDD.accdb")
+     Dim cmd As OleDbCommand = new OleDbCommand(updateCmd, conn)
+
+     Dim FFFF1Param as New OleDbParameter("@FFFF1", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(3).Controls(0), TextBox).Text = "" Then 
+      FFFF1Param.Value = System.DBnull.Value
+      Else 
+      FFFF1Param.Value = CType(e.Item.Cells(3).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF1Param)
+
+     Dim FFFF2Param as New OleDbParameter("@FFFF2", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(4).Controls(0), TextBox).Text = "" Then 
+      FFFF2Param.Value = System.DBnull.Value
+      Else 
+      FFFF2Param.Value = CType(e.Item.Cells(4).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF2Param)
+
+     Dim FFFF3Param as New OleDbParameter("@FFFF3", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(5).Controls(0), TextBox).Text = "" Then 
+      FFFF3Param.Value = System.DBnull.Value
+      Else 
+      FFFF3Param.Value = CType(e.Item.Cells(5).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF3Param)
+
+     Dim FFFF4Param as New OleDbParameter("@FFFF4", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(6).Controls(0), TextBox).Text = "" Then 
+      FFFF4Param.Value = System.DBnull.Value
+      Else 
+      FFFF4Param.Value = CType(e.Item.Cells(6).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF4Param)
+
+     Dim FFFF5Param as New OleDbParameter("@FFFF5", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(7).Controls(0), TextBox).Text = "" Then 
+      FFFF5Param.Value = System.DBnull.Value
+      Else 
+      FFFF5Param.Value = CType(e.Item.Cells(7).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF5Param)
+
+     Dim FFFF6Param as New OleDbParameter("@FFFF6", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(8).Controls(0), TextBox).Text = "" Then 
+      FFFF6Param.Value = System.DBnull.Value
+      Else 
+      FFFF6Param.Value = CType(e.Item.Cells(8).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF6Param)
+
+     Dim FFFF7Param as New OleDbParameter("@FFFF7", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(9).Controls(0), TextBox).Text = "" Then 
+      FFFF7Param.Value = System.DBnull.Value
+      Else 
+      FFFF7Param.Value = CType(e.Item.Cells(9).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF7Param)
+
+     Dim FFFF8Param as New OleDbParameter("@FFFF8", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(10).Controls(0), TextBox).Text = "" Then 
+      FFFF8Param.Value = System.DBnull.Value
+      Else 
+      FFFF8Param.Value = CType(e.Item.Cells(10).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF8Param)
+
+     Dim FFFF9Param as New OleDbParameter("@FFFF9", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(11).Controls(0), TextBox).Text = "" Then 
+      FFFF9Param.Value = System.DBnull.Value
+      Else 
+      FFFF9Param.Value = CType(e.Item.Cells(11).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFF9Param)
+
+     Dim FFFFAParam as New OleDbParameter("@FFFFA", OleDbType.VarChar, 50)
+      If CType(e.Item.Cells(11).Controls(0), TextBox).Text = "" Then 
+      FFFFAParam.Value = System.DBnull.Value
+      Else 
+      FFFFAParam.Value = CType(e.Item.Cells(11).Controls(0), TextBox).Text
+      End If 
+      cmd.Parameters.Add(FFFFAParam)
+
+    Try
+      conn.Open()
+      cmd.ExecuteNonQuery()
+'      response.write(updateCmd) 
+     _gd1.EditItemIndex = -1
+    Finally
+      conn.Dispose()
+    End Try
+
+     BindSortedData(Session("SortColumn"))
+  End Sub
+' ================================================================================
+  Sub gd1_Insert(sender As Object, _
+                         e As DataGridCommandEventArgs)  
+   If e.CommandName = "Insert" Then
+      Dim txtPKPKPKPKPK As TextBox = e.Item.FindControl("add_PKPKPKPKPK")
+      Dim txtFFFF1 As TextBox = e.Item.FindControl("add_FFFF1")
+      Dim txtFFFF2 As TextBox = e.Item.FindControl("add_FFFF2")
+      Dim txtFFFF3 As TextBox = e.Item.FindControl("add_FFFF3")
+      Dim txtFFFF4 As TextBox = e.Item.FindControl("add_FFFF4")
+      Dim txtFFFF5 As TextBox = e.Item.FindControl("add_FFFF5")
+      Dim txtFFFF6 As TextBox = e.Item.FindControl("add_FFFF6")
+      Dim txtFFFF7 As TextBox = e.Item.FindControl("add_FFFF7")
+      Dim txtFFFF8 As TextBox = e.Item.FindControl("add_FFFF8")
+      Dim txtFFFF9 As TextBox = e.Item.FindControl("add_FFFF9")
+      Dim txtFFFFA As TextBox = e.Item.FindControl("add_FFFFA")
+
+      Dim InsertCmd As String
+      'Create the appropriate SQL statement
+      InsertCmd = "INSERT INTO TTTTT (" _
+            & " PKPKPKPKPK" _
+            & ", FFFF1" _
+            & ", FFFF2" _
+            & ", FFFF3" _
+            & ", FFFF4" _
+            & ", FFFF5" _
+            & ", FFFF6" _
+            & ", FFFF7" _
+            & ", FFFF8" _
+            & ", FFFF9" _
+            & ", FFFFA" _
+            & ") VALUES (" _
+            & "@PKPKPKPKPK"  _
+            & ",@FFFF1"  _
+            & ",@FFFF2"  _
+            & ",@FFFF3"  _
+            & ",@FFFF4"  _
+            & ",@FFFF5"  _
+            & ",@FFFF6"  _
+            & ",@FFFF7"  _
+            & ",@FFFF8"  _
+            & ",@FFFF9"  _
+            & ",@FFFFA"  _
+            & ")"
+     Dim conn as OleDBConnection
+        conn = new OleDBConnection("Provider=Microsoft.ACE.OLEDB.12.0;"+ _
+        "Data Source=" + Server.MapPath("~") + "/App_Data/DDDDD.accdb")
+     Dim cmd As OleDbCommand = new OleDbCommand(InsertCmd, conn)
+
+     Dim PKPKPKPKPKParam as New OleDbParameter("@PKPKPKPKPK", OleDbType.VarChar, 50)
+      If txtPKPKPKPKPK.Text = "" Then 
+      PKPKPKPKPKParam.Value = System.DBnull.Value
+      Else 
+      PKPKPKPKPKParam.Value = txtPKPKPKPKPK.Text
+      End If 
+      cmd.Parameters.Add(PKPKPKPKPKParam)
+
+     Dim FFFF1Param as New OleDbParameter("@FFFF1", OleDbType.VarChar, 50)
+      If txtFFFF1.Text = "" Then 
+      FFFF1Param.Value = System.DBnull.Value
+      Else 
+      FFFF1Param.Value = txtFFFF1.Text
+      End If 
+      cmd.Parameters.Add(FFFF1Param)
+
+     Dim FFFF2Param as New OleDbParameter("@FFFF2", OleDbType.VarChar, 50)
+      If txtFFFF2.Text = "" Then 
+      FFFF2Param.Value = System.DBnull.Value
+      Else 
+      FFFF2Param.Value = txtFFFF2.Text
+      End If 
+      cmd.Parameters.Add(FFFF2Param)
+
+     Dim FFFF3Param as New OleDbParameter("@FFFF3", OleDbType.VarChar, 50)
+      If txtFFFF3.Text = "" Then 
+      FFFF3Param.Value = System.DBnull.Value
+      Else 
+      FFFF3Param.Value = txtFFFF3.Text
+      End If 
+      cmd.Parameters.Add(FFFF3Param)
+
+     Dim FFFF4Param as New OleDbParameter("@FFFF4", OleDbType.VarChar, 50)
+      If txtFFFF4.Text = "" Then 
+      FFFF4Param.Value = System.DBnull.Value
+      Else 
+      FFFF4Param.Value = txtFFFF4.Text
+      End If 
+      cmd.Parameters.Add(FFFF4Param)
+
+     Dim FFFF5Param as New OleDbParameter("@FFFF5", OleDbType.VarChar, 50)
+      If txtFFFF5.Text = "" Then 
+      FFFF5Param.Value = System.DBnull.Value
+      Else 
+      FFFF5Param.Value = txtFFFF5.Text
+      End If 
+      cmd.Parameters.Add(FFFF5Param)
+
+     Dim FFFF6Param as New OleDbParameter("@FFFF6", OleDbType.VarChar, 50)
+      If txtFFFF6.Text = "" Then 
+      FFFF6Param.Value = System.DBnull.Value
+      Else 
+      FFFF6Param.Value = txtFFFF6.Text
+      End If 
+      cmd.Parameters.Add(FFFF6Param)
+
+     Dim FFFF7Param as New OleDbParameter("@FFFF7", OleDbType.VarChar, 50)
+      If txtFFFF7.Text = "" Then 
+      FFFF7Param.Value = System.DBnull.Value
+      Else 
+      FFFF7Param.Value = txtFFFF7.Text
+      End If 
+      cmd.Parameters.Add(FFFF7Param)
+
+     Dim FFFF8Param as New OleDbParameter("@FFFF8", OleDbType.VarChar, 50)
+      If txtFFFF8.Text = "" Then 
+      FFFF8Param.Value = System.DBnull.Value
+      Else 
+      FFFF8Param.Value = txtFFFF8.Text
+      End If 
+      cmd.Parameters.Add(FFFF8Param)
+
+     Dim FFFF9Param as New OleDbParameter("@FFFF9", OleDbType.VarChar, 50)
+      If txtFFFF9.Text = "" Then 
+      FFFF9Param.Value = System.DBnull.Value
+      Else 
+      FFFF9Param.Value = txtFFFF9.Text
+      End If 
+      cmd.Parameters.Add(FFFF9Param)
+
+     Dim FFFFAParam as New OleDbParameter("@FFFFA", OleDbType.VarChar, 50)
+      If txtFFFFA.Text = "" Then 
+      FFFFAParam.Value = System.DBnull.Value
+      Else 
+      FFFFAParam.Value = txtFFFFA.Text
+      End If 
+      cmd.Parameters.Add(FFFFAParam)
+
+    Try
+      conn.Open()
+      cmd.ExecuteNonQuery()
+'      response.write(InsertCmd) 
+     _gd1.EditItemIndex = -1
+    Finally
+      conn.Dispose()
+    End Try
+     BindSortedData(Session("SortColumn"))
+   End If 
+  End Sub
+
+' ================================================================================
+  Sub gd1_Delete(sender As Object, _
+                         e As DataGridCommandEventArgs)
+    _gd1.ShowFooter = True
+     Dim SelectedPK as String = _gd1.DataKeys(e.Item.ItemIndex)
+     Dim deleteCmd As String = "DELETE from TTTTT " & _ 
+       "where format(PKPKPKPKPK)= " & """" & SelectedPK & """"
+     Dim conn as OleDBConnection
+        conn = new OleDBConnection("Provider=Microsoft.ACE.OLEDB.12.0;"+ _
+        "Data Source=" + Server.MapPath("~") + "/App_Data/DDDDD.accdb")
+     Dim cmd As OleDbCommand = new OleDbCommand(deleteCmd, conn)
+    Try
+      conn.Open()
+      cmd.ExecuteNonQuery()
+'      response.write(deleteCmd) 
+     _gd1.EditItemIndex = -1
+    Finally
+      conn.Dispose()
+    End Try
+     BindSortedData(Session("SortColumn"))
+  End Sub
+
+' ================================================================================
+  Sub gd1_ItemDataBound(sender as Object, e as DataGridItemEventArgs)
+    ' First, make sure we're NOT dealing with a Header or Footer row
+    If e.Item.ItemType <> ListItemType.Header AND _
+         e.Item.ItemType <> ListItemType.Footer then
+      'Now, reference the LinkButton control the Delete ButtonColumn was referenced to 
+      Dim deleteButton as LinkButton = e.Item.Cells(1).Controls(1)
+      'We can now add the onclick event handler
+      deleteButton.Attributes("onclick") = "javascript:return " & _
+                "confirm('Are you sure you want to delete PKPKPKPKPK=" & _
+                DataBinder.Eval(e.Item.DataItem, "PKPKPKPKPK") & "?')"    
+    End If
+  End Sub
+
+' ================================================================================
+
+</script>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+	<p><i><b><font size="5" color="#0000FF">Maintain TTTTT</font></b>  Other title text / instructions...</i></p>
+
+<asp:datagrid id="_gd1" runat=server AutoGenerateColumns="False" AllowSorting="True"
+  GridLines=None
+  CellSpacing=2
+  Font-Name=Verdana Font-Size=8pt
+  HeaderStyle-BackColor=limegreen
+  FooterStyle-BackColor=thistle
+  ShowFooter=true
+  ItemStyle-BackColor=moccasin
+  CellPadding=2
+      OnItemCommand="gd1_Insert"
+  OnEditCommand="gd1_Edit"
+  OnCancelCommand="gd1_Cancel"
+  OnDeleteCommand="gd1_Delete"
+  OnUpdateCommand="gd1_Update"
+  DataKeyField="PKPKPKPKPK"
+        OnItemDataBound="gd1_ItemDataBound"
+        OnSortCommand="gd1_Sort">
+  <Columns>
+	<asp:EditCommandColumn ButtonType="LinkButton" UpdateText="Update" CancelText="Cancel" EditText="Edit"></asp:EditCommandColumn>
+      <asp:TemplateColumn >
+        <FooterTemplate>
+          <asp:LinkButton CommandName="Insert" Text="Add" ID="btnAdd" Runat="server" />
+        </FooterTemplate>
+        <ItemTemplate>
+          <asp:LinkButton CommandName="Delete" Text="Delete" ID="btnDel" Runat="server" />
+        </ItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="PKPKPKPKPK">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="PKPKPKPKPK" ID="btnSortPKPKPKPKPK" Runat="Server">PKPKPKPKPK</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_PKPKPKPKPK" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("PKPKPKPKPK") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="PKPKPKPKPK" Columns="5" Text='<%# Container.DataItem("PKPKPKPKPK") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF1">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF1" ID="btnSortFFFF1" Runat="Server">FFFF1</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF1" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF1") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF1" Columns="5" Text='<%# Container.DataItem("FFFF1") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF2">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF2" ID="btnSortFFFF2" Runat="Server">FFFF2</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF2" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF2") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF2" Columns="5" Text='<%# Container.DataItem("FFFF2") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF3">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF3" ID="btnSortFFFF3" Runat="Server">FFFF3</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF3" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF3") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF3" Columns="5" Text='<%# Container.DataItem("FFFF3") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF4">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF4" ID="btnSortFFFF4" Runat="Server">FFFF4</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF4" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF4") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF4" Columns="5" Text='<%# Container.DataItem("FFFF4") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF5">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF5" ID="btnSortFFFF5" Runat="Server">FFFF5</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF5" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF5") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF5" Columns="5" Text='<%# Container.DataItem("FFFF5") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF6">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF6" ID="btnSortFFFF6" Runat="Server">FFFF6</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF6" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF6") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF6" Columns="5" Text='<%# Container.DataItem("FFFF6") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF7">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF7" ID="btnSortFFFF7" Runat="Server">FFFF7</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF7" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF7") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF7" Columns="5" Text='<%# Container.DataItem("FFFF7") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF8">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF8" ID="btnSortFFFF8" Runat="Server">FFFF8</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF8" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF8") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF8" Columns="5" Text='<%# Container.DataItem("FFFF8") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFF9">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFF9" ID="btnSortFFFF9" Runat="Server">FFFF9</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFF9" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFF9") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFF9" Columns="5" Text='<%# Container.DataItem("FFFF9") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+      <asp:TemplateColumn HeaderText="FFFFA">
+        <HeaderTemplate><asp:LinkButton CommandName="Sort" CommandArgument="FFFFA" ID="btnSortFFFFA" Runat="Server">FFFFA</asp:LinkButton></HeaderTemplate>
+        <FooterTemplate><asp:TextBox ID="add_FFFFA" Columns="5" Runat="Server" /></FooterTemplate>
+        <ItemTemplate><%# Container.DataItem("FFFFA") %></ItemTemplate>
+        <EditItemTemplate><asp:TextBox ID="FFFFA" Columns="5" Text='<%# Container.DataItem("FFFFA") %>' Runat="server" /></EditItemTemplate>
+      </asp:TemplateColumn>
+
+   </Columns>
+</asp:datagrid>
+<p>Instructions here...</p>
+</asp:Content>

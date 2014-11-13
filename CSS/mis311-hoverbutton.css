@@ -1,0 +1,30 @@
+@import url('http://fonts.googleapis.com/css?family=Oswald');
+.mis311-hoverbutton {
+	background-color:;
+	-moz-border-radius:0px;
+	-webkit-border-radius:0px;
+	border-radius:0px;
+	border:3px solid #1A334C;
+	display:inline-block;
+	cursor:pointer;
+	color:#000000 !important;
+	font-family:Oswald;
+	font-size:16px;
+	padding:5px 50px;
+	text-decoration:none;
+}
+
+.mis311-hoverbutton:hover {
+	background-color:#333333;
+    color:#ffffff !important;
+    -o-transition:color .2s ease-out, background 0.35s ease-in;
+  -ms-transition:color .2s ease-out, background 0.35s ease-in;
+  -moz-transition:color .2s ease-out, background 0.35s ease-in;
+  -webkit-transition:color .2s ease-out, background 0.35s ease-in;
+  transition:color .2s ease-out, background 0.35s ease-in;
+}
+
+.mis311-hoverbuttone:active {
+	position:relative;
+	top:1px;
+}

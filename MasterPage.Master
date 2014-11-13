@@ -1,0 +1,223 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="MasterPage.Master.vb" Inherits="OMAS_website.MasterPage" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title> Welcome to Olivia's Mountain Adventure Shop</title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Oswald">
+    <style type="text/css">
+        html {
+            font-family: 'Oswald';
+            background-image:url(/images/background.jpg);
+            background-size:100%, contain;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center; 
+        }
+        .style1
+            background-color: #FFFFFF;
+            font-size: xx-small;
+        }
+        .newStyle1 {
+            background-color: #EDDDFF;
+        }
+        .newStyle2 {
+            background-image: url('/images/DCP03561 _faded.jpg');
+        }
+        #header {
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+#content {
+    width:auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+}
+#footer {
+    height: 85px;
+    padding-top: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+#menu, #menu ul {
+    margin:0 auto;
+    padding:0;
+}
+#menu {
+    display: inline-block;
+    width: auto;
+    list-style:none;
+    border-top: 0px solid #ccc;
+    border-left: 0px solid #ccc;
+    border-bottom: 0px solid #ccc;
+}
+#menu li {
+    float: left;
+    position: relative;
+    list-style: none;
+    background-color: ;
+}
+#menu > li:hover > ul {
+    display: block;
+    background-color: #ffffff;
+}
+#menu > li > ul {
+    display: none;
+    position: absolute;
+    background-color: ;
+}
+#menu li a {
+    display:block;
+    padding:10px 10px;
+    text-decoration:none;
+    font-weight:bold;
+    white-space: nowrap;
+    background-color: ;
+}
+#menu li a:hover {
+    color:#c00;
+    background-color: ;
+     opacity:0.5;
+}
+    #menu0 {
+    display: inline-block;
+    min-width: 600px;
+    list-style:none;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+#menu1 {
+    display: inline-block;
+    min-width: 600px;
+    list-style:none;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+#menu2 {
+    display: inline-block;
+    min-width: 600px;
+    list-style:none;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+#menu3 {
+    display: inline-block;
+    min-width: 600px;
+    list-style:none;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+        .auto-style5 {
+            width: 30%;
+        }
+        .auto-style8 {
+            display: block ;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .auto-style9 {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 200px;
+            height: auto;
+        }
+        .auto-style11{
+            margin-left: auto;
+            margin-right: auto;
+            width: 95%;
+        }
+          a:link {
+    color: #000000;
+}
+
+/* visited link */
+a:visited {
+    color: #000000;
+}
+
+/* mouse over link */
+a:hover {
+    color: #c00;
+}
+
+/* selected link */
+a:active {
+    color: #000000;
+    </style>
+</head>
+<body class="auto-style8">  
+    <center>
+        <ul class="auto-style11" id="menu">
+                <li><a href="Default.aspx">HOME</a></li>
+        <li>&nbsp;&nbsp;&nbsp;</li>
+            <li><a href="products.aspx">PRODUCTS</a>
+                <ul class="auto-style8">
+                    <li><a href="product-view.aspx">PRODUCTS LIST</a></li>
+                    <li><a href="product_type-view.aspx">PRODUCT TYPE</a></li>
+                </ul>
+            </li>
+            <li>&nbsp;&nbsp;&nbsp;</li>
+            <li><a href="customers.aspx">CUSTOMERS</a></li>
+            <li>&nbsp;&nbsp;&nbsp;</li>
+            <li><script>
+                    function passWord() {
+                        var testV = 1;
+                        var pass1 = prompt('Please Enter Your Password', ' ');
+                        while (testV < 3) {
+                            if (!pass1)
+                                history.go(-1);
+                            if (pass1.toLowerCase() == "letmein") {
+                                window.open('staff.aspx','_self');
+                                break;
+                            }
+                            testV += 1;
+                            var pass1 =
+                            prompt('Access Denied - Password Incorrect, Please Try Again.', 'Password');
+                        }
+                        if (pass1.toLowerCase() != "password" & testV == 3)
+                            history.go(-1);
+                        return " ";
+                    }
+</script>
+                    <a onclick="passWord()" href="javascript:void(0);"> STAFF </a>
+
+            </li>
+        </ul>
+        </center>
+       <span class="auto-style5"></span>
+            <br />
+            <center>
+            <table class="auto-style5">
+                <tr>
+                    <td class="auto-style5">&nbsp;</td>
+                    <td>
+                        <img class="auto-style9" src="IMAGES/hipsterlogogenerator_1414017778136.png" /></td>
+                    <td class="auto-style5">&nbsp;</td>
+                </tr>
+    </table> 
+    </center>
+    <form id="form1" runat="server">
+        <div>
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder>
+    </div>
+    </form>
+    <center>
+    <p class="auto-style11">
+        This web-site is built for academic credit and it does not represent any real organization. No goods or services are offered or implied</p>
+        </center>
+</body>
+</html>
